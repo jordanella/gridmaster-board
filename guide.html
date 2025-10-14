@@ -329,17 +329,24 @@
             color: #212529;
         }
 
-        .step:before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: #667eea;
-            font-weight: bold;
-        }
+        
 
         .step:hover {
             background: #f8f9fa;
             border-radius: 4px;
+        }
+
+        /* Checklist styles */
+        .step-checkbox {
+            margin-right: 8px;
+            transform: translateY(1px);
+        }
+        .step-text {
+            display: inline-block;
+        }
+        .step.completed .step-text {
+            text-decoration: line-through;
+            color: #6c757d;
         }
 
         .empty-state {
@@ -664,7 +671,8 @@ Section Two
                         
                         currentSection.steps.push({
                             text: stepText,
-                            indent: indent
+                            indent: indent,
+                            isCheckbox: trimmed.startsWith('-')
                         });
                     }
                 } else {
@@ -715,6 +723,10 @@ Section Two
             return Math.floor(count);
         }
 
+        function getStepStorageKey(guideName, sectionTitle, stepText) {
+            return `checkbox:${guideName}::${sectionTitle}::${stepText}`;
+        }
+
         function renderSections(sections) {
             const content = document.getElementById('guideContent');
             content.innerHTML = '';
@@ -746,11 +758,49 @@ Section Two
                     const body = document.createElement('div');
                     body.className = 'section-body';
 
-                    section.steps.forEach(step => {
+                    const guideNameNow = document.getElementById('guideName').textContent;
+                    section.steps.forEach((step, stepIdx) => {
                         const stepDiv = document.createElement('div');
                         stepDiv.className = 'step';
                         stepDiv.style.paddingLeft = `${25 + (step.indent * 20)}px`;
-                        stepDiv.textContent = step.text;
+
+                        if (step.isCheckbox) {
+                            const checkbox = document.createElement('input');
+                            const checkboxId = `chk-${index}-${stepIdx}`;
+                            checkbox.type = 'checkbox';
+                            checkbox.className = 'step-checkbox';
+                            checkbox.id = checkboxId;
+
+                            const textSpan = document.createElement('span');
+                            textSpan.className = 'step-text';
+                            textSpan.textContent = step.text;
+
+                            const storageKey = getStepStorageKey(guideNameNow, section.title, step.text);
+                            const saved = localStorage.getItem(storageKey);
+                            if (saved === '1') {
+                                checkbox.checked = true;
+                                stepDiv.classList.add('completed');
+                            }
+
+                            checkbox.addEventListener('change', () => {
+                                if (checkbox.checked) {
+                                    localStorage.setItem(storageKey, '1');
+                                    stepDiv.classList.add('completed');
+                                } else {
+                                    localStorage.setItem(storageKey, '0');
+                                    stepDiv.classList.remove('completed');
+                                }
+                            });
+
+                            const label = document.createElement('label');
+                            label.setAttribute('for', checkboxId);
+                            label.appendChild(checkbox);
+                            label.appendChild(textSpan);
+
+                            stepDiv.appendChild(label);
+                        } else {
+                            stepDiv.textContent = step.text;
+                        }
                         body.appendChild(stepDiv);
                     });
 
