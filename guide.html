@@ -908,6 +908,9 @@ Section Two
             sections.forEach((section, sectionIndex) => {
                 if (section.steps.length > 0) {
                     updateSectionCheckbox(section.title, sectionIndex, section.steps.length);
+                } else {
+                    // Update TOC for sections without steps
+                    updateTOCItem(sectionIndex, 0);
                 }
             });
         }
@@ -1072,11 +1075,9 @@ Section Two
                 tocContent.appendChild(tocItem);
             });
             
-            // Update TOC completion states
+            // Update TOC completion states for all sections
             sections.forEach((section, index) => {
-                if (section.steps.length > 0) {
-                    updateTOCItem(index, section.steps.length);
-                }
+                updateTOCItem(index, section.steps.length);
             });
         }
 
