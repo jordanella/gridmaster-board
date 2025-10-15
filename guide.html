@@ -4,38 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guide Parser</title>
-    <style>
+	<style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #505c92 0%, #3c3444 100%);
-            min-height: 100vh;
-            padding: 20px;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(135deg, #425c88 0%, #23304a 100%);
+          min-height: 100vh;
+          padding: 20px;
+          transition: background 0.3s ease;
+        }
+
+        .dark body {
+          background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
         }
 
         .main-wrapper {
-            display: flex;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
+          display: flex;
+          gap: 20px;
+          max-width: 1400px;
+          margin: 0 auto;
         }
 
         .sidebar {
-            width: 280px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-            max-height: calc(100vh - 40px);
-            overflow: hidden;
-            transition: max-height 0.3s ease, width 0.3s ease;
+          width: 280px;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          position: sticky;
+          top: 20px;
+          height: fit-content;
+          max-height: calc(100vh - 40px);
+          overflow: hidden;
+          transition: all 0.3s ease;
+        }
+
+        .dark .sidebar {
+          background: #243056;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
 
         .sidebar.collapsed {
@@ -47,17 +57,6 @@
             opacity: 0;
             width: 0;
             overflow: hidden;
-        }
-
-        .sidebar-header {
-            background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            white-space: nowrap;
         }
 
         .sidebar-header span:first-child {
@@ -74,429 +73,574 @@
             transform: rotate(180deg);
         }
 
-        .toc-content {
-            padding: 15px;
-            max-height: calc(100vh - 150px);
-            overflow-y: auto;
-            transition: opacity 0.3s;
-        }
-
-        .sidebar.collapsed .toc-content {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .toc-item {
-            padding: 8px 12px;
-            margin: 5px 0;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9em;
-            color: #495057;
-            border-left: 3px solid transparent;
-        }
-
-        .toc-item:hover {
-            background: #f8f9fa;
-            border-left-color: #5976ab;
-            transform: translateX(5px);
-        }
-        
-        .toc-item.completed {
-            text-decoration: line-through;
-            color: #6c757d;
-            opacity: 0.7;
-        }
-
-        .toc-controls {
-            padding: 10px 15px;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .toc-button {
-            padding: 6px 12px;
-            background: #5976ab;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.75em;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 0px;
-        }
-
-        .toc-button:hover {
-            transform: translateY(-1px);
-        }
-
-        .toc-button:active {
-            transform: translateY(0);
-        }
-
-        .container {
-            flex: 1;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .header .version {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .input-section {
-            padding: 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-            max-height: 500px;
-            overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease;
-        }
-
-        .input-section.collapsed {
-            max-height: 0;
-            padding: 0 30px;
-        }
-
-        .input-toggle {
-            padding: 15px 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            color: #495057;
-            transition: background 0.2s;
-        }
-
-        .input-toggle:hover {
-            background: #e9ecef;
-        }
-
-        .input-toggle-icon {
-            transition: transform 0.3s;
-        }
-
-        .input-section.collapsed ~ .input-toggle .input-toggle-icon {
+        .sidebar.collapsed .sidebar-toggle {
             transform: rotate(180deg);
         }
 
+        .sidebar-header {
+          background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
+          color: white;
+          padding: 15px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .dark .sidebar-header {
+          background: linear-gradient(135deg, #425c88 0%, #2f4470 100%);
+        }
+
+        .toc-content {
+          padding: 15px;
+          max-height: calc(100vh - 150px);
+          overflow-y: auto;
+          transition: opacity 0.3s;
+        }
+
+        .sidebar.collapsed .toc-content {
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .toc-item {
+          padding: 8px 12px;
+          margin: 5px 0;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-size: 0.9em;
+          color: #495057;
+          border-left: 3px solid transparent;
+        }
+
+        .dark .toc-item {
+          color: #c9d1d9;
+        }
+
+        .toc-item:hover {
+          background: #f8f9fa;
+          border-left-color: #5976ab;
+          transform: translateX(5px);
+        }
+
+        .dark .toc-item:hover {
+          background: #2f4470;
+          border-left-color: #7390c5;
+        }
+
+        .toc-item.completed {
+          text-decoration: line-through;
+          color: #6c757d;
+          opacity: 0.7;
+        }
+
+        .dark .toc-item.completed {
+          color: #8b949e;
+        }
+
+        .toc-controls {
+          padding: 10px 15px;
+          border-top: 1px solid #e9ecef;
+          display: flex;
+          gap: 8px;
+          justify-content: center;
+        }
+
+        .dark .toc-controls {
+          border-top-color: #444458;
+        }
+
+        .toc-button {
+          padding: 6px 12px;
+          background: #5976ab;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          font-size: 0.75em;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .dark .toc-button {
+          background: #425c88;
+        }
+
+        .toc-button:hover {
+          transform: translateY(-1px);
+        }
+
+        .container {
+          flex: 1;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          overflow: hidden;
+          transition: background 0.3s ease;
+        }
+
+        .dark .container {
+          background: #243056;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .header {
+          background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
+          color: white;
+          padding: 30px;
+          text-align: center;
+          position: relative;
+        }
+
+        .dark .header {
+          background: linear-gradient(135deg, #425c88 0%, #2f4470 100%);
+        }
+
+        .header h1 {
+          font-size: 2em;
+          margin-bottom: 10px;
+        }
+
+        .header .version {
+          font-size: 1.1em;
+          opacity: 0.9;
+        }
+
+        .dark-mode-toggle {
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          color: white;
+          font-size: 24px;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .dark-mode-toggle:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: scale(1.1);
+        }
+
+        .input-section {
+          padding: 30px;
+          background: #f8f9fa;
+          border-bottom: 2px solid #e9ecef;
+          max-height: 500px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+        }
+
+        .dark .input-section {
+          background: #202747;
+          border-bottom-color: #444458;
+        }
+
+        .input-section.collapsed {
+          max-height: 0;
+          padding: 0 30px;
+        }
+
+        .input-toggle {
+          padding: 15px 30px;
+          background: #f8f9fa;
+          border-bottom: 2px solid #e9ecef;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-weight: bold;
+          color: #495057;
+          transition: background 0.2s;
+        }
+
+        .dark .input-toggle {
+          background: #202747;
+          border-bottom-color: #444458;
+          color: #c9d1d9;
+        }
+
+        .input-toggle:hover {
+          background: #e9ecef;
+        }
+
+        .dark .input-toggle:hover {
+          background: #1a1a2e;
+        }
+
         textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            resize: vertical;
-            transition: border-color 0.3s;
+          width: 100%;
+          min-height: 200px;
+          padding: 15px;
+          border: 2px solid #dee2e6;
+          border-radius: 8px;
+          font-family: 'Courier New', monospace;
+          font-size: 14px;
+          resize: vertical;
+          transition: all 0.3s;
+          background: white;
+          color: #212529;
+        }
+
+        .dark textarea {
+          background: #1a1a2e;
+          border-color: #444458;
+          color: #c9d1d9;
         }
 
         textarea:focus {
-            outline: none;
-            border-color: #5976ab;
+          outline: none;
+          border-color: #5976ab;
+        }
+
+        .dark textarea:focus {
+          border-color: #7390c5;
         }
 
         button {
-            margin-top: 15px;
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+          margin-top: 0px;
+          padding: 12px 30px;
+          background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .dark button {
+          background: linear-gradient(135deg, #425c88 0%, #2f4470 100%);
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(55, 88, 146, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(55, 88, 146, 0.4);
         }
 
         .button-group {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
+          margin-top: 15px;
+          display: flex;
+          gap: 10px;
         }
 
         .clear-button {
-            background: #dc3545;
+          background: #dc3545;
         }
 
-        .clear-button:hover {
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        .dark .clear-button {
+          background: #b02a37;
         }
 
         .guide-content {
-            padding: 30px;
+          padding: 30px;
         }
 
         .section {
-            margin-bottom: 25px;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: box-shadow 0.3s;
+          margin-bottom: 25px;
+          border: 1px solid #e9ecef;
+          border-radius: 8px;
+          overflow: hidden;
+          transition: box-shadow 0.3s;
+        }
+
+        .dark .section {
+          border-color: #444458;
         }
 
         .section:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .section:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
 
         .section-header {
-            background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
-            color: white;
-            padding: 15px 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            font-size: 1.1em;
-            transition: background 0.3s;
+          background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
+          color: white;
+          padding: 15px 20px;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-weight: bold;
+          font-size: 1.1em;
+          transition: background 0.3s;
         }
 
-        .section-header:hover {
-            background: linear-gradient(135deg, #4c6dab 0%, #375180 100%);
-        }
-
-        .toggle-icon {
-            font-size: 1.2em;
-            transition: transform 0.3s;
-        }
-
-        .section.collapsed .toggle-icon {
-            transform: rotate(-90deg);
+        .dark .section-header {
+          background: linear-gradient(135deg, #425c88 0%, #2f4470 100%);
         }
 
         .section-description {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            font-style: italic;
-            color: #495057;
-            border-bottom: 1px solid #e9ecef;
+          padding: 15px 20px;
+          background: #f8f9fa;
+          font-style: italic;
+          color: #495057;
+          border-bottom: 1px solid #e9ecef;
+        }
+
+        .dark .section-description {
+          background: #202d47;
+          color: #8b949e;
+          border-bottom-color: #444458;
         }
 
         .section-body {
-            padding: 20px;
-            background: white;
-            max-height: 2000px;
-            overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease;
+          padding: 20px;
+          background: white;
+          max-height: 2000px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+        }
+
+        .dark .section-body {
+          background: #243056;
         }
 
         .section.collapsed .section-body {
-            max-height: 0;
-            padding: 0 20px;
+          max-height: 0;
+          padding: 0 20px;
         }
 
         .step {
-            padding: 10px 0;
-            padding-left: 25px;
-            position: relative;
-            line-height: 1.6;
-            color: #212529;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
+          padding: 10px 0;
+          padding-left: 25px;
+          position: relative;
+          line-height: 1.6;
+          color: #212529;
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .dark .step {
+          color: #c9d1d9;
         }
 
         .step:hover {
-            background: #f8f9fa;
-            border-radius: 4px;
+          background: #f8f9fa;
+          border-radius: 4px;
         }
 
-        .step-checkbox {
-            margin-top: 5px;
-            cursor: pointer;
-            flex-shrink: 0;
-            width: 18px;
-            height: 18px;
-            accent-color: #5976ab;
-        }
-
-        .step-text {
-            flex: 1;
-            transition: all 0.3s;
+        .dark .step:hover {
+          background: #2f4470;
         }
 
         .step.completed .step-text {
-            text-decoration: line-through;
-            color: #6c757d;
-            opacity: 0.7;
+          text-decoration: line-through;
+          color: #6c757d;
+          opacity: 0.7;
+        }
+
+        .dark .step.completed .step-text {
+          color: #8b949e;
+        }
+
+        .step-checkbox {
+          margin-top: 5px;
+          cursor: pointer;
+          flex-shrink: 0;
+          width: 18px;
+          height: 18px;
+          accent-color: #5976ab;
+        }
+
+        .dark .step-checkbox {
+          accent-color: #7390c5;
         }
 
         .section-checkbox {
-            margin-top: 3px;
-            margin-left: 10px;
-            cursor: pointer;
-            min-width: 18px;
-            height: 18px;
-            accent-color: #375180;
+          margin-top: 3px;
+          margin-left: 10px;
+          cursor: pointer;
+          min-width: 18px;
+          height: 18px;
+          accent-color: #375180;
         }
-        
-        .section-checkbox:indeterminate {
-            accent-color: #375180;
+
+        .dark .section-checkbox {
+          accent-color: #5976ab;
         }
 
         .empty-state {
-            text-align: center;
-            padding: 60px 30px;
-            color: #6c757d;
+          text-align: center;
+          padding: 60px 30px;
+          color: #6c757d;
         }
 
-        .empty-state p {
-            font-size: 1.2em;
-            margin-bottom: 10px;
+        .dark .empty-state {
+          color: #8b949e;
+        }
+
+        .dark-mode-button {
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          width: 55px;
+          height: 55px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          font-size: 28px;
+		  padding: 0px 0px 5px 0px;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
         }
 
         .help-button {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-top: 0px;
+          width: 42px;
+          height: 42px;
+		  padding: 0px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          font-size: 15px;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
         }
 
         .help-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.8);
-            transform: scale(1.1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          background: rgba(255, 255, 255, 0.1);
+          transform: scale(1.05);
         }
 
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 1000;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .dark .modal {
+          background: rgba(0, 0, 0, 0.7);
         }
 
         .modal.active {
-            display: flex;
+          display: flex;
         }
 
         .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            position: relative;
+          background: white;
+          border-radius: 12px;
+          padding: 30px;
+          max-width: 900px;
+          max-height: 80vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          position: relative;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .dark .modal-content {
+          background: #243056;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
+
+		.modal-header {
+			display: flex;
+			justify-content: space-between;
+		}
 
         .modal-header h2 {
-            color: #5976ab;
-            margin: 0;
+          color: #5976ab;
+        }
+
+        .dark .modal-header h2 {
+          color: #7390c5;
         }
 
         .modal-close {
-            background: none;
-            border: none;
-            font-size: 28px;
-            color: #6c757d;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s;
+          background: none;
+          border: none;
+          font-size: 28px;
+          color: #6c757d;
+          cursor: pointer;
+		  height: 30px;
+		  width: 30px;
+		  padding: 0px;
         }
 
-        .modal-close:hover {
-            background: #f8f9fa;
-            color: #495057;
-            transform: none;
-            box-shadow: none;
+        .dark .modal-close {
+          color: #8b949e;
         }
+
+		.light-mode-icon {
+			display: none;
+		}
+
+		.dark .light-mode-icon {
+			display: block;
+		}
+
+		.dark .dark-mode-icon {
+			display: none;
+		}
 
         .modal-body {
-            color: #495057;
-            line-height: 1.6;
+          color: #495057;
+          line-height: 1.6;
+        }
+
+        .dark .modal-body {
+          color: #c9d1d9;
         }
 
         .modal-body h3 {
-            color: #5976ab;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 1.1em;
+          color: #5976ab;
+          margin-top: 20px;
+          margin-bottom: 10px;
+        }
+
+        .dark .modal-body h3 {
+          color: #7390c5;
         }
 
         .modal-body code {
-            background: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+          background: #f8f9fa;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-family: 'Courier New', monospace;
         }
 
-        .modal-body ul {
-            margin: 10px 0;
-            padding-left: 20px;
+        .dark .modal-body code {
+          background: #1a1a2e;
+          color: #7ee787;
         }
 
-        .modal-body li {
-            margin: 8px 0;
+        .toggle-icon {
+          transition: transform 0.3s;
         }
-    </style>
+
+        .section.collapsed .toggle-icon {
+          transform: rotate(-90deg);
+        }
+	</style>
 </head>
-<body>
+<body class="dark">
     <div class="main-wrapper">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header" onclick="toggleSidebar()">
@@ -516,9 +660,11 @@
 
         <div class="container">
             <div class="header">
-                <button class="help-button" onclick="toggleModal()">?</button>
                 <h1 id="guideName">Guide Parser</h1>
                 <div class="version" id="guideVersion">Paste your guide below</div>
+				<button class="dark-mode-button" onclick="toggleDarkMode()">
+					<div class="light-mode-icon">☀️</div><div class="dark-mode-icon">🌙</div>
+				</button>
             </div>
 
             <div class="input-toggle" id="inputToggle" onclick="toggleInput()" style="display: none;">
@@ -531,6 +677,7 @@
                 <div class="button-group">
                     <button onclick="parseGuide()">Parse Guide</button>
                     <button class="clear-button" onclick="clearGuide()">Clear Saved Guide</button>
+					<button class="help-button" onclick="toggleModal()">?</button>
                 </div>
             </div>
 
@@ -559,7 +706,7 @@
                 <ul>
                     <li><strong>Non-indented text:</strong> Section headers</li>
                     <li><strong>Lines after header (before steps):</strong> Section description</li>
-                    <li><strong>2+ blank lines:</strong> Start a new section</li>
+                    <li><strong>A blank line:</strong> Start a new section</li>
                 </ul>
 
                 <h3>Step Format</h3>
@@ -586,13 +733,29 @@ Section Two
     </div>
 
     <script>
+		function toggleDarkMode() {
+			document.body.classList.toggle('dark');
+
+			// Save the current state to localStorage
+			const isDark = document.body.classList.contains('dark');
+			localStorage.setItem('darkMode', isDark);
+		}
+
         window.addEventListener('DOMContentLoaded', function() {
-            const savedGuide = localStorage.getItem('savedGuide');
-            if (savedGuide) {
-                document.getElementById('guideInput').value = savedGuide;
-                parseGuide();
-            }
-        });
+			// Load dark mode preference
+			const darkMode = localStorage.getItem('darkMode');
+			if (darkMode === 'false') {
+				document.body.classList.remove('dark');
+			}
+			// If darkMode is 'true' or null, keep the default 'dark' class from HTML
+			
+			const savedGuide = localStorage.getItem('savedGuide');
+			if (savedGuide) {
+				document.getElementById('guideInput').value = savedGuide;
+				parseGuide();
+			}
+		});
+
 
         function getCheckboxStates() {
             const saved = localStorage.getItem('checkboxStates');
