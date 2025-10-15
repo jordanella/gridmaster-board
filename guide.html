@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #505c92 0%, #3c3444 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -50,10 +50,9 @@
         }
 
         .sidebar-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
             color: white;
             padding: 15px;
-            font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -77,7 +76,7 @@
 
         .toc-content {
             padding: 15px;
-            max-height: calc(100vh - 170px);
+            max-height: calc(100vh - 150px);
             overflow-y: auto;
             transition: opacity 0.3s;
         }
@@ -100,15 +99,14 @@
 
         .toc-item:hover {
             background: #f8f9fa;
-            border-left-color: #667eea;
+            border-left-color: #5976ab;
             transform: translateX(5px);
         }
-
-        .toc-item.active {
-            background: #e7e9fc;
-            border-left-color: #667eea;
-            color: #667eea;
-            font-weight: bold;
+        
+        .toc-item.completed {
+            text-decoration: line-through;
+            color: #6c757d;
+            opacity: 0.7;
         }
 
         .toc-controls {
@@ -121,18 +119,17 @@
 
         .toc-button {
             padding: 6px 12px;
-            background: #667eea;
+            background: #5976ab;
             color: white;
             border: none;
             border-radius: 4px;
             font-size: 0.75em;
             cursor: pointer;
             transition: all 0.2s;
-			margin-top: 0px;
+            margin-top: 0px;
         }
 
         .toc-button:hover {
-            background: #5568d3;
             transform: translateY(-1px);
         }
 
@@ -149,7 +146,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -219,13 +216,13 @@
 
         textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #5976ab;
         }
 
         button {
             margin-top: 15px;
             padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -237,7 +234,7 @@
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(55, 88, 146, 0.4);
         }
 
         button:active {
@@ -275,7 +272,7 @@
         }
 
         .section-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5976ab 0%, #40609b 100%);
             color: white;
             padding: 15px 20px;
             cursor: pointer;
@@ -288,7 +285,7 @@
         }
 
         .section-header:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+            background: linear-gradient(135deg, #4c6dab 0%, #375180 100%);
         }
 
         .toggle-icon {
@@ -327,19 +324,47 @@
             position: relative;
             line-height: 1.6;
             color: #212529;
-        }
-
-        .step:before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: #667eea;
-            font-weight: bold;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
         }
 
         .step:hover {
             background: #f8f9fa;
             border-radius: 4px;
+        }
+
+        .step-checkbox {
+            margin-top: 5px;
+            cursor: pointer;
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            accent-color: #5976ab;
+        }
+
+        .step-text {
+            flex: 1;
+            transition: all 0.3s;
+        }
+
+        .step.completed .step-text {
+            text-decoration: line-through;
+            color: #6c757d;
+            opacity: 0.7;
+        }
+
+        .section-checkbox {
+            margin-top: 3px;
+            margin-left: 10px;
+            cursor: pointer;
+            min-width: 18px;
+            height: 18px;
+            accent-color: #375180;
+        }
+        
+        .section-checkbox:indeterminate {
+            accent-color: #375180;
         }
 
         .empty-state {
@@ -368,7 +393,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-			margin-top: 0px;
+            margin-top: 0px;
         }
 
         .help-button:hover {
@@ -414,7 +439,7 @@
         }
 
         .modal-header h2 {
-            color: #667eea;
+            color: #5976ab;
             margin: 0;
         }
 
@@ -447,7 +472,7 @@
         }
 
         .modal-body h3 {
-            color: #667eea;
+            color: #5976ab;
             margin-top: 20px;
             margin-bottom: 10px;
             font-size: 1.1em;
@@ -561,7 +586,6 @@ Section Two
     </div>
 
     <script>
-        // Load saved guide on page load
         window.addEventListener('DOMContentLoaded', function() {
             const savedGuide = localStorage.getItem('savedGuide');
             if (savedGuide) {
@@ -570,26 +594,90 @@ Section Two
             }
         });
 
+        function getCheckboxStates() {
+            const saved = localStorage.getItem('checkboxStates');
+            return saved ? JSON.parse(saved) : {};
+        }
+
+        function saveCheckboxStates(states) {
+            localStorage.setItem('checkboxStates', JSON.stringify(states));
+        }
+
+        function getCheckboxKey(sectionIndex, stepIndex) {
+            return `s${sectionIndex}-st${stepIndex}`;
+        }
+
+        function getContentBasedKey(sectionTitle, stepText) {
+            // Create a unique key based on section title and step text
+            return `section:${sectionTitle}||step:${stepText}`;
+        }
+
+        function migrateCheckboxStates(sections) {
+            const oldStates = getCheckboxStates();
+            const newStates = {};
+            
+            // Check if old states use position-based keys (format: s0-st0)
+            const hasPositionBasedKeys = Object.keys(oldStates).some(key => key.match(/^s\d+-st\d+$/));
+            
+            if (hasPositionBasedKeys) {
+                // Migrate from position-based to content-based keys
+                sections.forEach((section, sectionIndex) => {
+                    section.steps.forEach((step, stepIndex) => {
+                        const oldKey = getCheckboxKey(sectionIndex, stepIndex);
+                        const newKey = getContentBasedKey(section.title, step.text);
+                        
+                        if (oldStates[oldKey]) {
+                            newStates[newKey] = oldStates[oldKey];
+                        }
+                    });
+                });
+                
+                // Save migrated states
+                if (Object.keys(newStates).length > 0) {
+                    saveCheckboxStates(newStates);
+                    return newStates;
+                }
+            }
+            
+            // Clean up - only keep states for tasks that exist in current guide
+            const validKeys = new Set();
+            sections.forEach((section) => {
+                if (section.steps.length === 0) {
+                    // Add section-only checkbox key for sections without steps
+                    validKeys.add(getContentBasedKey(section.title, '_section_only'));
+                }
+                section.steps.forEach((step) => {
+                    const contentKey = getContentBasedKey(section.title, step.text);
+                    validKeys.add(contentKey);
+                });
+            });
+            
+            // Filter old states to only include valid keys
+            Object.keys(oldStates).forEach((key) => {
+                if (validKeys.has(key)) {
+                    newStates[key] = oldStates[key];
+                }
+            });
+            
+            // Save cleaned states
+            saveCheckboxStates(newStates);
+            return newStates;
+        }
+
         function parseGuide() {
             const input = document.getElementById('guideInput').value;
-            
-            // Save to localStorage
             localStorage.setItem('savedGuide', input);
             
-            // Collapse input section after parsing
             const inputSection = document.getElementById('inputSection');
             const inputToggle = document.getElementById('inputToggle');
             inputSection.classList.add('collapsed');
             inputToggle.style.display = 'flex';
             
             const allLines = input.split('\n');
-            
-            // Find guide name (first non-empty line)
             let guideName = '';
             let headerEndIndex = 0;
             const versionLines = [];
             
-            // Get the first non-empty line as guide name
             for (let i = 0; i < allLines.length; i++) {
                 const trimmed = allLines[i].trim();
                 if (trimmed) {
@@ -604,22 +692,18 @@ Section Two
                 return;
             }
             
-            // Continue reading non-empty lines until we hit a blank line
             for (let i = headerEndIndex; i < allLines.length; i++) {
                 const trimmed = allLines[i].trim();
                 if (!trimmed) {
-                    // Found blank line, header ends here
                     headerEndIndex = i;
                     break;
                 }
                 versionLines.push(trimmed);
             }
             
-            // Set the guide name and version/description
             document.getElementById('guideName').textContent = guideName;
             document.getElementById('guideVersion').textContent = versionLines.join(' • ') || '';
             
-            // Parse sections - keep empty lines to detect breaks
             const sections = [];
             let currentSection = null;
             let descriptionLines = [];
@@ -629,17 +713,14 @@ Section Two
                 const line = allLines[i];
                 const trimmed = line.trim();
 
-                // Detect empty lines
                 if (!trimmed) {
                     consecutiveEmptyLines++;
                     continue;
                 }
 
-                // Get indentation level
                 const indent = getIndentLevel(line);
                 const isIndented = indent > 0 || trimmed.startsWith('-');
 
-                // Multiple empty lines signal new section
                 if (consecutiveEmptyLines >= 2 && currentSection) {
                     if (descriptionLines.length > 0) {
                         currentSection.description = descriptionLines.join(' ');
@@ -651,9 +732,7 @@ Section Two
                 consecutiveEmptyLines = 0;
 
                 if (isIndented) {
-                    // This is a step
                     if (currentSection) {
-                        // Add any accumulated description lines
                         if (descriptionLines.length > 0) {
                             currentSection.description = descriptionLines.join(' ');
                             descriptionLines = [];
@@ -668,12 +747,9 @@ Section Two
                         });
                     }
                 } else {
-                    // This is either a new section header or a description line
                     if (currentSection && currentSection.steps.length === 0) {
-                        // We're still in description phase (no steps added yet)
                         descriptionLines.push(trimmed);
                     } else {
-                        // New section
                         if (currentSection) {
                             if (descriptionLines.length > 0) {
                                 currentSection.description = descriptionLines.join(' ');
@@ -690,7 +766,6 @@ Section Two
                 }
             }
 
-            // Add the last section
             if (currentSection) {
                 if (descriptionLines.length > 0) {
                     currentSection.description = descriptionLines.join(' ');
@@ -698,10 +773,7 @@ Section Two
                 sections.push(currentSection);
             }
 
-            // Render sections
             renderSections(sections);
-            
-            // Generate table of contents
             generateTOC(sections);
         }
 
@@ -709,7 +781,7 @@ Section Two
             let count = 0;
             for (let char of line) {
                 if (char === '\t') count++;
-                else if (char === ' ') count += 0.25; // 4 spaces = 1 tab
+                else if (char === ' ') count += 0.25;
                 else break;
             }
             return Math.floor(count);
@@ -718,19 +790,75 @@ Section Two
         function renderSections(sections) {
             const content = document.getElementById('guideContent');
             content.innerHTML = '';
+            
+            // Store sections globally for reference
+            window.currentSections = sections;
+            
+            // Migrate old position-based keys to content-based keys
+            const checkboxStates = migrateCheckboxStates(sections);
 
-            sections.forEach((section, index) => {
+            sections.forEach((section, sectionIndex) => {
                 const sectionDiv = document.createElement('div');
                 sectionDiv.className = 'section';
-                sectionDiv.id = `section-${index}`;
+                sectionDiv.id = `section-${sectionIndex}`;
 
                 const header = document.createElement('div');
                 header.className = 'section-header';
-                header.innerHTML = `
-                    <span>${section.title}</span>
-                    <span class="toggle-icon">▼</span>
-                `;
-                header.onclick = () => toggleSection(index);
+                
+                const headerContent = document.createElement('span');
+                headerContent.style.display = 'flex';
+                headerContent.style.alignItems = 'center';
+                headerContent.style.gap = '10px';
+                headerContent.style.flex = '1';
+                
+                // Always add checkbox to section header
+                const sectionCheckbox = document.createElement('input');
+                sectionCheckbox.type = 'checkbox';
+                sectionCheckbox.className = 'section-checkbox';
+                
+                if (section.steps.length > 0) {
+                    sectionCheckbox.onclick = (e) => {
+                        e.stopPropagation();
+                        toggleSectionCheckbox(section.title, sectionIndex, section.steps.length, e.target.checked);
+                    };
+                } else {
+                    // For sections without steps, just toggle the checkbox itself
+                    const contentKey = getContentBasedKey(section.title, '_section_only');
+                    const checkboxStates = getCheckboxStates();
+                    sectionCheckbox.checked = checkboxStates[contentKey] || false;
+                    sectionCheckbox.onclick = (e) => {
+                        e.stopPropagation();
+                        const states = getCheckboxStates();
+                        states[contentKey] = e.target.checked;
+                        saveCheckboxStates(states);
+                        updateTOCItem(sectionIndex, 0);
+                    };
+                }
+                
+                headerContent.appendChild(sectionCheckbox);
+                
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = section.title;
+                headerContent.appendChild(titleSpan);
+                
+                header.appendChild(headerContent);
+                
+                const toggleIcon = document.createElement('span');
+                toggleIcon.className = 'toggle-icon';
+                toggleIcon.textContent = '▼';
+                header.appendChild(toggleIcon);
+                
+                if (section.steps.length > 0) {
+                    header.onclick = (e) => {
+                        if (!e.target.classList.contains('section-checkbox')) {
+                            toggleSection(sectionIndex);
+                        }
+                    };
+                } else {
+                    header.onclick = null;
+                    header.style.cursor = 'default';
+                    toggleIcon.style.display = 'none';
+                }
 
                 sectionDiv.appendChild(header);
 
@@ -741,29 +869,156 @@ Section Two
                     sectionDiv.appendChild(desc);
                 }
 
-                // Only add body if there are steps
                 if (section.steps.length > 0) {
                     const body = document.createElement('div');
                     body.className = 'section-body';
 
-                    section.steps.forEach(step => {
+                    section.steps.forEach((step, stepIndex) => {
                         const stepDiv = document.createElement('div');
                         stepDiv.className = 'step';
+                        stepDiv.id = `step-${sectionIndex}-${stepIndex}`;
                         stepDiv.style.paddingLeft = `${25 + (step.indent * 20)}px`;
-                        stepDiv.textContent = step.text;
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'step-checkbox';
+                        const contentKey = getContentBasedKey(section.title, step.text);
+                        checkbox.checked = checkboxStates[contentKey] || false;
+                        if (checkbox.checked) {
+                            stepDiv.classList.add('completed');
+                        }
+                        checkbox.onchange = () => toggleStepCheckbox(section.title, step.text, sectionIndex, stepIndex, checkbox.checked);
+                        
+                        const stepText = document.createElement('span');
+                        stepText.className = 'step-text';
+                        stepText.textContent = step.text;
+                        
+                        stepDiv.appendChild(checkbox);
+                        stepDiv.appendChild(stepText);
                         body.appendChild(stepDiv);
                     });
 
                     sectionDiv.appendChild(body);
-                } else {
-                    // No steps - make header non-clickable and remove toggle icon
-                    header.onclick = null;
-                    header.style.cursor = 'default';
-                    header.querySelector('.toggle-icon').style.display = 'none';
                 }
 
                 content.appendChild(sectionDiv);
             });
+            
+            // Update section checkboxes after all sections are rendered
+            sections.forEach((section, sectionIndex) => {
+                if (section.steps.length > 0) {
+                    updateSectionCheckbox(section.title, sectionIndex, section.steps.length);
+                }
+            });
+        }
+
+        function toggleStepCheckbox(sectionTitle, stepText, sectionIndex, stepIndex, checked) {
+            const checkboxStates = getCheckboxStates();
+            const contentKey = getContentBasedKey(sectionTitle, stepText);
+            checkboxStates[contentKey] = checked;
+            saveCheckboxStates(checkboxStates);
+            
+            const stepDiv = document.getElementById(`step-${sectionIndex}-${stepIndex}`);
+            if (checked) {
+                stepDiv.classList.add('completed');
+            } else {
+                stepDiv.classList.remove('completed');
+            }
+            
+            const section = document.getElementById(`section-${sectionIndex}`);
+            const stepsCount = section.querySelectorAll('.step').length;
+            updateSectionCheckbox(sectionTitle, sectionIndex, stepsCount);
+            updateTOCItem(sectionIndex, stepsCount);
+        }
+
+        function toggleSectionCheckbox(sectionTitle, sectionIndex, stepsCount, checked) {
+            const checkboxStates = getCheckboxStates();
+            
+            for (let i = 0; i < stepsCount; i++) {
+                const stepDiv = document.getElementById(`step-${sectionIndex}-${i}`);
+                const stepCheckbox = stepDiv.querySelector('.step-checkbox');
+                const stepTextElement = stepDiv.querySelector('.step-text');
+                const stepText = stepTextElement.textContent;
+                
+                const contentKey = getContentBasedKey(sectionTitle, stepText);
+                checkboxStates[contentKey] = checked;
+                
+                stepCheckbox.checked = checked;
+                
+                if (checked) {
+                    stepDiv.classList.add('completed');
+                } else {
+                    stepDiv.classList.remove('completed');
+                }
+            }
+            
+            saveCheckboxStates(checkboxStates);
+            updateSectionCheckbox(sectionTitle, sectionIndex, stepsCount);
+            updateTOCItem(sectionIndex, stepsCount);
+        }
+
+        function updateSectionCheckbox(sectionTitle, sectionIndex, stepsCount) {
+            const section = document.getElementById(`section-${sectionIndex}`);
+            const sectionCheckbox = section.querySelector('.section-checkbox');
+            
+            if (!sectionCheckbox || !window.currentSections) return;
+            
+            const sectionData = window.currentSections[sectionIndex];
+            const checkboxStates = getCheckboxStates();
+            let allChecked = true;
+            let anyChecked = false;
+            
+            sectionData.steps.forEach((step) => {
+                const contentKey = getContentBasedKey(sectionData.title, step.text);
+                const isChecked = checkboxStates[contentKey] || false;
+                if (isChecked) {
+                    anyChecked = true;
+                } else {
+                    allChecked = false;
+                }
+            });
+            
+            sectionCheckbox.checked = allChecked;
+            sectionCheckbox.indeterminate = anyChecked && !allChecked;
+            
+            // Update TOC item
+            updateTOCItem(sectionIndex, stepsCount);
+        }
+        
+        function updateTOCItem(sectionIndex, stepsCount) {
+            const tocItem = document.getElementById(`toc-item-${sectionIndex}`);
+            if (!tocItem || !window.currentSections) return;
+            
+            const sectionData = window.currentSections[sectionIndex];
+            const checkboxStates = getCheckboxStates();
+            
+            if (sectionData.steps.length === 0) {
+                // For sections without steps, check the section-only checkbox
+                const contentKey = getContentBasedKey(sectionData.title, '_section_only');
+                const isChecked = checkboxStates[contentKey] || false;
+                if (isChecked) {
+                    tocItem.classList.add('completed');
+                } else {
+                    tocItem.classList.remove('completed');
+                }
+                return;
+            }
+            
+            let allChecked = true;
+            
+            sectionData.steps.forEach((step) => {
+                const contentKey = getContentBasedKey(sectionData.title, step.text);
+                const isChecked = checkboxStates[contentKey] || false;
+                if (!isChecked) {
+                    allChecked = false;
+                }
+            });
+            
+            if (allChecked && sectionData.steps.length > 0) {
+                tocItem.classList.add('completed');
+            } else {
+                tocItem.classList.remove('completed');
+            }
         }
 
         function toggleSection(index) {
@@ -774,6 +1029,7 @@ Section Two
         function clearGuide() {
             if (confirm('Are you sure you want to clear the saved guide?')) {
                 localStorage.removeItem('savedGuide');
+                localStorage.removeItem('checkboxStates');
                 document.getElementById('guideInput').value = '';
                 document.getElementById('guideName').textContent = 'Guide Parser';
                 document.getElementById('guideVersion').textContent = 'Paste your guide below';
@@ -788,7 +1044,6 @@ Section Two
                         Parse a guide to see the table of contents
                     </div>
                 `;
-                // Show input section again
                 document.getElementById('inputSection').classList.remove('collapsed');
                 document.getElementById('inputToggle').style.display = 'none';
             }
@@ -811,21 +1066,26 @@ Section Two
             sections.forEach((section, index) => {
                 const tocItem = document.createElement('div');
                 tocItem.className = 'toc-item';
+                tocItem.id = `toc-item-${index}`;
                 tocItem.textContent = section.title;
                 tocItem.onclick = () => scrollToSection(index);
                 tocContent.appendChild(tocItem);
+            });
+            
+            // Update TOC completion states
+            sections.forEach((section, index) => {
+                if (section.steps.length > 0) {
+                    updateTOCItem(index, section.steps.length);
+                }
             });
         }
 
         function scrollToSection(index) {
             const section = document.getElementById(`section-${index}`);
             if (section) {
-                // Expand the section if it's collapsed
                 section.classList.remove('collapsed');
-                
                 section.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 
-                // Highlight the active TOC item
                 document.querySelectorAll('.toc-item').forEach((item, i) => {
                     if (i === index) {
                         item.classList.add('active');
